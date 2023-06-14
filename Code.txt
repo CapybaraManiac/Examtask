@@ -1,0 +1,131 @@
+#include <iostream>
+#include <ctime>
+#include <cstdlib>
+#include <unordered_set>
+using namespace std;
+
+/*Данные строки подключают необходимые заголовочные файлы, включая <iostream> для ввода-вывода,
+<ctime> и <cstdlib> для работы со временем и генерации случайных чисел,
+а также <unordered_set> для использования хэш-таблицы.*/
+
+class Node {
+public:
+    int value;
+    Node* next;
+
+    Node(int val) {
+        value = val;
+        next = nullptr;
+    }
+};
+
+/*Этот код определяет класс Node, который представляет узел связанного списка.
+Он содержит переменную value для хранения значения узла и указатель next на следующий узел в списке.
+В конструкторе класса устанавливается значение узла и инициализируется указатель next значением nullptr.*/
+
+class Stack {
+private:
+    Node* top;
+
+public:
+    Stack() {
+        top = nullptr;
+    }
+
+    bool isEmpty() {
+        return (top == nullptr);
+    }
+
+    void push(int value) {
+        Node* newNode = new Node(value);
+        newNode->next = top;
+        top = newNode;
+    }
+
+    int pop() {
+        if (isEmpty()) {
+            cout << "Stack underflow!" << endl;
+            return -1;
+        }
+        else {
+            int value = top->value;
+            Node* temp = top;
+            top = top->next;
+            delete temp;
+            return value;
+        }
+    }
+
+    int peek() {
+        if (isEmpty()) {
+            cout << "Stack is empty!" << endl;
+            return -1;
+        }
+        else {
+            return top->value;
+        }
+    }
+};
+
+/*В этой части кода определяется класс Stack, который реализует стек.
+У класса есть приватное поле top, которое представляет вершину стека
+Stack() инициализирует пустой стек.
+isEmpty() проверяет, пуст ли стек.
+push(int value) добавляет значение в вершину стека.
+pop() удаляет и возвращает значение вершины стека.
+peek() возвращает значение вершины стека без удаления.*/
+
+void mergeStacks(Stack& stack1, Stack& stack2, Stack& resultStack) {
+    unordered_set<int> uniqueValues;
+
+    while (!stack1.isEmpty()) {
+        int value = stack1.pop();
+        if (uniqueValues.find(value) == uniqueValues.end()) {
+            resultStack.push(value);
+            uniqueValues.insert(value);
+        }
+    }
+
+    while (!stack2.isEmpty()) {
+        int value = stack2.pop();
+        if (uniqueValues.find(value) == uniqueValues.end()) {
+            resultStack.push(value);
+            uniqueValues.insert(value);
+        }
+    }
+}
+
+/*Функция mergeStacks объединяет два стека stack1 и stack2 в resultStack,
+исключая дублирующиеся элементы.
+Она использует хэш-таблицу для отслеживания уникальных значений и последовательно извлекает элементы из обоих стеков,
+добавляя их в resultStack, только если они не присутствуют в хэш-таблице.*/
+
+int main() {
+    Stack stack1, stack2, resultStack;
+
+    srand(time(nullptr));
+
+    for (int i = 0; i < 100; i++) {
+        int value = rand() % 1000;
+        stack1.push(value);
+    }
+
+    for (int i = 0; i < 100; i++) {
+        int value = rand() % 1000;
+        stack2.push(value);
+    }
+
+    mergeStacks(stack1, stack2, resultStack);
+
+    while (!resultStack.isEmpty()) {
+        cout << resultStack.pop() << " ";
+    }
+    cout << endl;
+
+    return 0;
+}
+
+/*Функция main() создает объекты класса Stack: stack1,
+stack2 и resultStack. Затем генерируется 100 случайных чисел и добавляются в stack1 и stack2 с помощью метода push().
+Далее вызывается функция mergeStacks, которая формирует resultStack,включая только уникальные элементы из stack1 и stack2.
+Затем с помощью цикла while выводятся элементы resultStack с помощью метода pop().*/
